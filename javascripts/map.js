@@ -11,23 +11,24 @@ $(document).ready(function() {
   var markersArray = [];
   var school_destinations = [];
   var displayPlace;
+  var x = document.getElementById("geoLocation");
 
   // marker icons
   var destinationIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=D|FF0000|000000';
   var originIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=O|FFFF00|000000';
 
-    //////////////// get sample data //////////////////////
-    $.get("http://lofischools.herokuapp.com/search?query=School&state=NY&limit=10", function(data) {
-      schoolData = JSON.parse(data)["results"].forEach(function(school){
-        schools[school.name] = school.street + ", " + school.city
-        reverseSchools[school.street + ", " + school.city] = school.name
-      })
-      // set school_destinations values (zip codes)
-      for(var key in schools) {
-        school_destinations.push(schools[key]);
-      }
-    });
-    ///////////////////end sample data////////////////////
+  //////////////// get sample data //////////////////////
+  $.get("http://lofischools.herokuapp.com/search?query=School&state=NY&limit=10", function(data) {
+    schoolData = JSON.parse(data)["results"].forEach(function(school){
+      schools[school.name] = school.street + ", " + school.city
+      reverseSchools[school.street + ", " + school.city] = school.name
+    })
+    // set school_destinations values (zip codes)
+    for(var key in schools) {
+      school_destinations.push(schools[key]);
+    }
+  });
+  ///////////////////end sample data////////////////////
 
 
   function initialize() {
@@ -39,6 +40,42 @@ $(document).ready(function() {
     }
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   }
+
+  // start geolocation
+  function showPosition(position) {
+      var latlon = position.coords.latitude + "," + position.coords.longitude;
+      var marker = new google.maps.Marker({
+          map: map,
+          position: latlon
+      });
+  }
+  function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+
+  function showError(error) {
+      switch(error.code) {
+          case error.PERMISSION_DENIED:
+              x.innerHTML = "User denied the request for Geolocation."
+              break;
+          case error.POSITION_UNAVAILABLE:
+              x.innerHTML = "Location information is unavailable."
+              break;
+          case error.TIMEOUT:
+              x.innerHTML = "The request to get user location timed out."
+              break;
+          case error.UNKNOWN_ERROR:
+              x.innerHTML = "An unknown error occurred."
+              break;
+      }
+  }
+  // end geolocation
+
+
 
   // start code address //
   function codeAddress() {
@@ -54,6 +91,7 @@ $(document).ready(function() {
         alert('Geocode was not successful for the following reason: ' + status);
       }
     });
+
     // start calculate distance //
     function calculateDistances() {
       var service = new google.maps.DistanceMatrixService();
@@ -68,13 +106,14 @@ $(document).ready(function() {
         }, callback);
     }
     // end calculate distance //
+
+    // on click calculate distance //
     $("#distanceCalc").click(function(){
         calculateDistances();
-      });
+    });
+    // on click calculate distance //
   }
   // end code address //
-
-
 
   ////////////// start reverse geocoding /////////////////
   function codeLatLng(latitude, longitude) {
@@ -89,11 +128,6 @@ $(document).ready(function() {
   }
   ////////////// end reverse geocoding /////////////////
 
-
-
-
-
-  ////////////////////////////////////////////////////////////////////////////////////////
   // start distance matrix functions
   function callback(response, status) {
     if (status != google.maps.DistanceMatrixStatus.OK) {
@@ -166,14 +200,19 @@ $(document).ready(function() {
     markersArray = [];
   }
   // end distance matrix functions
- ////////////////////////////////////////////////////////////////////////////////////////
 
   google.maps.event.addDomListener(window, 'load', initialize);
 
-  // upon clicking zipcode, find on map
+  // find zip code on map
   $("#geocodeZip").click(function(){
     codeAddress();
   });
+
+  // find current location on map
+  $("#geoLocation").click(function(){
+    getLocation();
+  });
+
 
 });
 
