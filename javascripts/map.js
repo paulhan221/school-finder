@@ -44,6 +44,7 @@ $(document).ready(function() {
   // start geolocation
   function showPosition(position) {
       var latlon = position.coords.latitude + "," + position.coords.longitude;
+      debugger;
       var marker = new google.maps.Marker({
           map: map,
           position: latlon
