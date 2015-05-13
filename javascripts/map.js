@@ -153,8 +153,9 @@ $(document).ready(function() {
           addMarker(destinations[j], true);
           var objKey = destinations[j]
           var schoolName = reverseSchools[objKey]
+          var startPoint = origins[i].replace(", USA", "")
           ///////////////// display html ////////////////
-          outputDiv.innerHTML += results[j].distance.text + " FROM " + origins[i] + ' TO ' + schoolName + " (" + destinations[j] + ") "
+          outputDiv.innerHTML += results[j].distance.text + " FROM " + startPoint + ' TO ' + schoolName + " (" + destinations[j] + ") "
               + ': ' + ' approximately '
               + results[j].duration.text + '<br>';
         }
