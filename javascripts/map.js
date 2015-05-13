@@ -2,14 +2,23 @@ $(document).ready(function() {
   var geocoder;
   var map;
   var address;
-  var schools;
+  var schoolData;
+  var schools = [];
   var bounds = new google.maps.LatLngBounds();
   var markersArray = [];
-  
+
   // marker icons
   var destinationIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=D|FF0000|000000';
   var originIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=O|FFFF00|000000';
 
+    //////////////// get sample data //////////////////////
+    $.get("http://lofischools.herokuapp.com/search?query=School&state=NY&limit=10", function(data) {
+      schoolData = JSON.parse(data)["results"].forEach(function(school){
+        schools.push(school["zip"])
+      })
+    });
+    ///////////////////end sample data////////////////////
+    
   function initialize() {
     geocoder = new google.maps.Geocoder();
     var latlng = new google.maps.LatLng(-34.397, 150.644);
@@ -19,6 +28,7 @@ $(document).ready(function() {
     }
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   }
+
   // start code address //
   function codeAddress() {
     address = document.getElementById('address').value;
@@ -39,7 +49,7 @@ $(document).ready(function() {
       service.getDistanceMatrix(
         {
           origins: [address],
-          destinations: ["14094"],
+          destinations: schools,
           travelMode: google.maps.TravelMode.DRIVING,
           unitSystem: google.maps.UnitSystem.METRIC,
           avoidHighways: false,
@@ -50,14 +60,10 @@ $(document).ready(function() {
     $("#distanceCalc").click(function(){
         calculateDistances();
       });
-    //////////////// get sample data //////////////////////
-    $.get( "http://lofischools.herokuapp.com/search?query=School&state=NY&limit=10", function(data) {
-      schools = JSON.parse(data)["results"];
-    });
-    ///////////////////end sample data////////////////////
 
   }
   // end code address //
+
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // start distance matrix functions
