@@ -58,7 +58,7 @@ $(document).ready(function() {
       } else {
         // Browser doesn't support Geolocation
         handleNoGeolocation(false);
-  }    
+    }    
     // end geolocation
   }
     // start geolocation
@@ -185,7 +185,6 @@ $(document).ready(function() {
           var lat = this.position.A;
           var lng = this.position.F;
           codeLatLng(lat,lng);
-
         infowindow.setContent(displayPlace);
         infowindow.open(map, this);
       });
