@@ -1,11 +1,13 @@
+  var schools = {};
 $(document).ready(function() {
   var geocoder;
   var map;
   var address;
   var schoolData;
-  var schools = [];
+  var distances = [];
   var bounds = new google.maps.LatLngBounds();
   var markersArray = [];
+  var school_destinations = [];
 
   // marker icons
   var destinationIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=D|FF0000|000000';
@@ -14,11 +16,16 @@ $(document).ready(function() {
     //////////////// get sample data //////////////////////
     $.get("http://lofischools.herokuapp.com/search?query=School&state=NY&limit=10", function(data) {
       schoolData = JSON.parse(data)["results"].forEach(function(school){
-        schools.push(school["zip"])
+        schools[school.name] = school.zip
       })
+      // set school_destinations values (zip codes)
+      for(var key in schools) {
+        school_destinations.push(schools[key]);
+      }
     });
     ///////////////////end sample data////////////////////
-    
+
+
   function initialize() {
     geocoder = new google.maps.Geocoder();
     var latlng = new google.maps.LatLng(-34.397, 150.644);
@@ -49,7 +56,7 @@ $(document).ready(function() {
       service.getDistanceMatrix(
         {
           origins: [address],
-          destinations: schools,
+          destinations: school_destinations,
           travelMode: google.maps.TravelMode.DRIVING,
           unitSystem: google.maps.UnitSystem.METRIC,
           avoidHighways: false,
@@ -60,7 +67,6 @@ $(document).ready(function() {
     $("#distanceCalc").click(function(){
         calculateDistances();
       });
-
   }
   // end code address //
 
@@ -68,6 +74,7 @@ $(document).ready(function() {
   ////////////////////////////////////////////////////////////////////////////////////////
   // start distance matrix functions
   function callback(response, status) {
+
     if (status != google.maps.DistanceMatrixStatus.OK) {
       alert('Error was: ' + status);
     } else {
@@ -76,15 +83,18 @@ $(document).ready(function() {
       var outputDiv = document.getElementById('outputDiv');
       outputDiv.innerHTML = '';
       deleteOverlays();
-
       for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
+        results = results.sort(function(a,b){
+          return Number(a.distance.text.replace(" km","")) - Number(b.distance.text.replace(" km",""))
+        });
+        results = results.slice(0,3)
         addMarker(origins[i], false);
         for (var j = 0; j < results.length; j++) {
           addMarker(destinations[j], true);
-          outputDiv.innerHTML += origins[i] + ' to ' + destinations[j]
-              + ': ' + results[j].distance.text + ' in '
-              + results[j].duration.text + '<br>';
+          outputDiv.innerHTML += results[j].distance.text + " " + origins[i] + ' to ' + destinations[j]
+              + ': ' + ' in '
+              + results[j].duration.text +'<br>';
         }
       }
     }
