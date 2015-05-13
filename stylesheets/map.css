@@ -1,0 +1,9 @@
+ #map-canvas {
+        height: 500px;
+        margin: 0px;
+        padding: 0px
+      }
+      #panel {
+        padding: 5px;
+        border: 1px solid #999;
+      }

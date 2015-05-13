@@ -1,0 +1,119 @@
+{
+meta: {
+code: 200,
+total_results: 5576,
+more_results: true
+},
+results: [
+{
+country: "US",
+state: "NY",
+lat: "40.822327",
+city: "Bronx",
+street: "1980 Lafayette Ave",
+name: "Bronx Compass High School",
+zip: "10473",
+gsid: "3614183",
+lon: "-73.85596"
+},
+{
+country: "US",
+state: "NY",
+lat: "40.880836",
+city: "Bronx",
+street: "3120 Corlear Ave",
+name: "Tech International Charter School",
+zip: "10463",
+gsid: "3614195",
+lon: "-73.90709"
+},
+{
+country: "US",
+state: "NY",
+lat: "40.689823",
+city: "Brooklyn",
+street: "600 Lafayette Ave",
+name: "Urban Dove Charter School",
+zip: "11216",
+gsid: "3614207",
+lon: "-73.95078"
+},
+{
+country: "US",
+state: "NY",
+lat: "40.8404",
+city: "East Norwich",
+street: "60 Walnut Ave",
+name: "Harmony Heights School",
+zip: "11732",
+gsid: "3608006",
+lon: "-73.5346"
+},
+{
+country: "US",
+state: "NY",
+lat: "40.672215",
+city: "Brooklyn",
+street: "1580 Dean St-3rd Fl",
+name: "Launch Expeditionary Learning Charter School",
+zip: "11213",
+gsid: "3614219",
+lon: "-73.93892"
+},
+{
+country: "US",
+state: "NY",
+lat: "40.704006",
+city: "Brooklyn",
+street: "20 Jay St-Ste 504",
+name: "Explore Envision Charter School",
+zip: "11201",
+gsid: "3614225",
+lon: "-73.986755"
+},
+{
+country: "US",
+state: "NY",
+lat: "40.935192",
+city: "Yonkers",
+street: "29 Chestnut Street",
+name: "Oakview Prep School Of Sda",
+zip: "10701",
+gsid: "3605779",
+lon: "-73.89003"
+},
+{
+country: "US",
+state: "NY",
+lat: "43.124283",
+city: "Lockport",
+street: "4363 Mapleton Rd",
+name: "Starpoint Middle School",
+zip: "14094",
+gsid: "3607909",
+lon: "-78.807205"
+},
+{
+country: "US",
+state: "NY",
+lat: "41.2915",
+city: "Chester",
+street: "359 Gibson Hill Rd",
+name: "Bellvale School",
+zip: "10918",
+gsid: "3608502",
+lon: "-74.2696"
+},
+{
+country: "US",
+state: "NY",
+lat: "40.735218",
+city: "New York",
+street: "320 E 19th St",
+name: "Ms 255 Salk School Of Science",
+zip: "10003",
+gsid: "3606418",
+lon: "-73.98161"
+}
+]
+}
