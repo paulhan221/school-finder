@@ -1,8 +1,10 @@
 $(document).ready(function() {
   var map;
   var infowindow;
+  var geocoder;
 
 function initialize() {
+  geocoder = new google.maps.Geocoder();
   var pyrmont = new google.maps.LatLng(-33.8665433, 151.1956316);
 
   map = new google.maps.Map(document.getElementById('map-canvas'), {
@@ -40,6 +42,24 @@ function createMarker(place) {
     infowindow.open(map, this);
   });
 }
+
+  function codeAddress() {
+    var address = document.getElementById("address").value;
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        map.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+        });
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    });
+  }
+$( "#img-click" ).click(function() {
+  codeAddress();
+});
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
