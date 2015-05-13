@@ -1,3 +1,4 @@
+var latlong;
 var schools = {};
 var reverseSchools = {};
 $(document).ready(function() {
@@ -39,43 +40,47 @@ $(document).ready(function() {
       center: latlng
     }
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-  }
+    // start geolocation
+       // Try HTML5 geolocation
+      if(navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          var pos = new google.maps.LatLng(position.coords.latitude,
+                                           position.coords.longitude);
 
-  // start geolocation
-  function showPosition(position) {
-      var latlon = position.coords.latitude + "," + position.coords.longitude;
-      debugger;
-      var marker = new google.maps.Marker({
-          map: map,
-          position: latlon
-      });
-  }
-  function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-    } else {
-        x.innerHTML = "Geolocation is not supported by this browser.";
-    }
-  }
+          var infowindow = new google.maps.InfoWindow({
+            map: map,
+            position: pos,
+            content: 'Location found using HTML5.'
+          });
 
-  function showError(error) {
-      switch(error.code) {
-          case error.PERMISSION_DENIED:
-              x.innerHTML = "User denied the request for Geolocation."
-              break;
-          case error.POSITION_UNAVAILABLE:
-              x.innerHTML = "Location information is unavailable."
-              break;
-          case error.TIMEOUT:
-              x.innerHTML = "The request to get user location timed out."
-              break;
-          case error.UNKNOWN_ERROR:
-              x.innerHTML = "An unknown error occurred."
-              break;
+          map.setCenter(pos);
+        }, function() {
+          handleNoGeolocation(true);
+        });
+      } else {
+        // Browser doesn't support Geolocation
+        handleNoGeolocation(false);
+  }    
+    // end geolocation
+  }
+    // start geolocation
+    function handleNoGeolocation(errorFlag) {
+      if (errorFlag) {
+        var content = 'Error: The Geolocation service failed.';
+      } else {
+        var content = 'Error: Your browser doesn\'t support geolocation.';
       }
-  }
-  // end geolocation
 
+      var options = {
+        map: map,
+        position: new google.maps.LatLng(60, 105),
+        content: content
+      };
+
+      var infowindow = new google.maps.InfoWindow(options);
+      map.setCenter(options.position);
+    }
+    // end geolocation
 
 
   // start code address //
@@ -207,11 +212,6 @@ $(document).ready(function() {
   // find zip code on map
   $("#geocodeZip").click(function(){
     codeAddress();
-  });
-
-  // find current location on map
-  $("#geoLocation").click(function(){
-    getLocation();
   });
 
 
