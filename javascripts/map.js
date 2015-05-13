@@ -1,6 +1,8 @@
-  var schools = {};
+var schools = {};
+var reverseSchools = {};
 $(document).ready(function() {
   var geocoder;
+  var infowindow;
   var map;
   var address;
   var schoolData;
@@ -8,6 +10,7 @@ $(document).ready(function() {
   var bounds = new google.maps.LatLngBounds();
   var markersArray = [];
   var school_destinations = [];
+  var displayPlace;
 
   // marker icons
   var destinationIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=D|FF0000|000000';
@@ -16,7 +19,8 @@ $(document).ready(function() {
     //////////////// get sample data //////////////////////
     $.get("http://lofischools.herokuapp.com/search?query=School&state=NY&limit=10", function(data) {
       schoolData = JSON.parse(data)["results"].forEach(function(school){
-        schools[school.name] = school.zip
+        schools[school.name] = school.street + ", " + school.city
+        reverseSchools[school.street + ", " + school.city] = school.name
       })
       // set school_destinations values (zip codes)
       for(var key in schools) {
@@ -71,15 +75,32 @@ $(document).ready(function() {
   // end code address //
 
 
+
+  ////////////// start reverse geocoding /////////////////
+  function codeLatLng(latitude, longitude) {
+    var input = latitude + ", " + longitude
+    var latlngStr = input.split(',', 2);
+    var lat = parseFloat(latlngStr[0]);
+    var lng = parseFloat(latlngStr[1]);
+    var latlng = new google.maps.LatLng(lat, lng);
+    geocoder.geocode({'latLng': latlng}, function(results, status) {
+      displayPlace =  results[0].formatted_address
+    });
+  }
+  ////////////// end reverse geocoding /////////////////
+
+
+
+
+
   ////////////////////////////////////////////////////////////////////////////////////////
   // start distance matrix functions
   function callback(response, status) {
-
     if (status != google.maps.DistanceMatrixStatus.OK) {
       alert('Error was: ' + status);
     } else {
       var origins = response.originAddresses;
-      var destinations = response.destinationAddresses;
+      var destinations = school_destinations;
       var outputDiv = document.getElementById('outputDiv');
       outputDiv.innerHTML = '';
       deleteOverlays();
@@ -92,9 +113,12 @@ $(document).ready(function() {
         addMarker(origins[i], false);
         for (var j = 0; j < results.length; j++) {
           addMarker(destinations[j], true);
-          outputDiv.innerHTML += results[j].distance.text + " " + origins[i] + ' to ' + destinations[j]
-              + ': ' + ' in '
-              + results[j].duration.text +'<br>';
+          var objKey = destinations[j]
+          var schoolName = reverseSchools[objKey]
+          ///////////////// display html ////////////////
+          outputDiv.innerHTML += results[j].distance.text + " FROM " + origins[i] + ' TO ' + schoolName + " (" + destinations[j] + ") "
+              + ': ' + ' approximately '
+              + results[j].duration.text + '<br>';
         }
       }
     }
@@ -117,6 +141,17 @@ $(document).ready(function() {
           icon: icon
         });
         markersArray.push(marker);
+        //// on click display info ////
+        infowindow = new google.maps.InfoWindow();
+        google.maps.event.addListener(marker, 'click', function() {
+          var lat = this.position.A;
+          var lng = this.position.F;
+          codeLatLng(lat,lng);
+
+        infowindow.setContent(displayPlace);
+        infowindow.open(map, this);
+      });
+        //// on click display info ////
       } else {
         alert('Geocode was not successful for the following reason: '
           + status);
